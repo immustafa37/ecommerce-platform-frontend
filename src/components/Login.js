@@ -1,41 +1,58 @@
-// src/components/Login.js
-
 import React, { useState } from 'react';
-import authService from '../services/authService';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Use useNavigate instead of useHistory
+import authService from '../services/authService'; // Import authService as default
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
+  const [error, setError] = useState('');
+  const navigate = useNavigate(); // Initialize useNavigate
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError('');
+
     try {
-      await authService.loginUser(email, password); // Log in the user and store the token
-      navigate('/'); // Redirect to home or desired route after login
+      const userData = await authService.loginUser(email, password); // Call loginUser from authService
+      console.log('Login successful:', userData);
+
+      // Store token in localStorage (or any other storage you prefer)
+      localStorage.setItem('token', userData.token); // Assuming userData contains a token
+
+      // Redirect to the root path after successful login
+      navigate('/'); // Change '/dashboard' to '/'
+
+      // If you have a user context or state management, you can update the user state here
+      // e.g., setUser(userData.user); // Assuming userData contains user info
+
     } catch (error) {
+      setError('Login failed');
       console.error('Login failed:', error);
-      // Handle error (e.g., show a notification or message to the user)
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
-        required
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
-        required
-      />
+      <h2>Login</h2>
+      <div>
+        <label>Email:</label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+      </div>
+      <div>
+        <label>Password:</label>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+      </div>
+      {error && <p>{error}</p>}
       <button type="submit">Login</button>
     </form>
   );

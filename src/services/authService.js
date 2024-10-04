@@ -1,47 +1,50 @@
-// src/services/authService.js
+const authService = {
+  registerUser: async (name, email, password) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/users/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
 
-const TOKEN_KEY = 'authToken'; // Key for local storage
+      if (!response.ok) {
+        throw new Error('Registration failed');
+      }
 
-const setToken = (token) => {
-  localStorage.setItem(TOKEN_KEY, token); // Store the token in local storage
-};
-
-const getToken = () => {
-  return localStorage.getItem(TOKEN_KEY); // Retrieve the token from local storage
-};
-
-const removeToken = () => {
-  localStorage.removeItem(TOKEN_KEY); // Remove the token from local storage
-};
-
-// Example function to log in and store the token
-const loginUser = async (email, password) => {
-  try {
-    const response = await fetch('http://localhost:5000/api/users/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Login failed');
+      const data = await response.json();
+      return data; // Return any data if needed
+    } catch (error) {
+      console.error('Error registering user:', error);
+      throw error; // Rethrow the error for further handling if necessary
     }
+  },
 
-    const data = await response.json();
-    const token = data.token; // Get the token from the response
-    setToken(token); // Store the token using the setToken function
-    return token; // Return the token if needed
-  } catch (error) {
-    console.error('Error logging in:', error);
-    throw error; // Rethrow the error for further handling if necessary
-  }
+  loginUser: async (email, password) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
+
+      const data = await response.json();
+      return data; // Return the data, which includes the token
+    } catch (error) {
+      console.error('Error logging in:', error);
+      throw error; // Rethrow the error for further handling if necessary
+    }
+  },
+
+  // Add more functions as needed
 };
 
-export default {
-  setToken,
-  getToken,
-  removeToken,
-  loginUser, // Export the loginUser function to use in other components
-};
+// Default export the authService object
+export default authService;

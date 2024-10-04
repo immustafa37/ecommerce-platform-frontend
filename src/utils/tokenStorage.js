@@ -1,15 +1,17 @@
-const TOKEN_KEY = response.data.token;
+// src/utils/tokenStorage.js
 
-const setToken = (token) => {
-  localStorage.setItem(TOKEN_KEY, token);
+const TOKEN_KEY = 'authToken'; // Key for local storage
+
+export const setToken = (token) => {
+  localStorage.setItem(TOKEN_KEY, token); // Store the token in local storage
 };
 
-const getToken = () => {
-  return localStorage.getItem(TOKEN_KEY);
+export const getToken = () => {
+  return localStorage.getItem(TOKEN_KEY); // Retrieve the token from local storage
 };
 
-const removeToken = () => {
-  localStorage.removeItem(TOKEN_KEY);
+export const removeToken = () => {
+  localStorage.removeItem(TOKEN_KEY); // Remove the token from local storage
 };
 
-export default { setToken, getToken, removeToken };
+export default { setToken, getToken, removeToken }; // Optional default export
