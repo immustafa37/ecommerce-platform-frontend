@@ -1,32 +1,20 @@
 import axios from 'axios';
-import { getToken } from '../utils/tokenStorage';
+import tokenStorage from '../utils/tokenStorage';
 
-const api = axios.create({
-  baseURL: '/api/products',
-});
+const API_URL = 'http://localhost:5000/api/products'; // Adjust URL if necessary
 
-// Attach JWT token to each request
-api.interceptors.request.use((config) => {
-  const token = getToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+const getAuthHeaders = () => {
+  const token = tokenStorage.getToken();
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+};
 
-export const getAllProducts = async () => {
-  const response = await api.get('/');
+export const getProducts = async () => {
+  const response = await axios.get(API_URL, getAuthHeaders());
   return response.data;
 };
 
-export const addProduct = async (productData) => {
-  const response = await api.post('/', productData);
-  return response.data;
-};
-
-export const updateProduct = async (id, productData) => {
-  const response = await api.put(`/${id}`, productData);
-  return response.data;
-};
-
-// Add other product-related functions as needed
+// You can add more functions for adding, updating, and deleting products similarly

@@ -1,6 +1,8 @@
+// src/components/Login.js
+
 import React, { useState } from 'react';
+import authService from '../services/authService';
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../services/authService';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -10,35 +12,32 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await loginUser(email, password);
-      navigate('/products'); // Redirect to the products page on successful login
+      await authService.loginUser(email, password); // Log in the user and store the token
+      navigate('/'); // Redirect to home or desired route after login
     } catch (error) {
-      console.error('Login failed', error);
-      // Optionally handle error (e.g., show a notification)
+      console.error('Login failed:', error);
+      // Handle error (e.g., show a notification or message to the user)
     }
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Login</button>
-      </form>
-    </div>
+    <form onSubmit={handleSubmit}>
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email"
+        required
+      />
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
+        required
+      />
+      <button type="submit">Login</button>
+    </form>
   );
 };
 
