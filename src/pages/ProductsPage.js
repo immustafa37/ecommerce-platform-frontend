@@ -1,12 +1,10 @@
 import React from 'react';
 import ProductList from '../components/ProductList';
-import ProductForm from '../components/ProductForm';
 
 const ProductsPage = () => {
   return (
     <div>
-      <h2>Manage Products</h2>
-      <ProductForm />
+      <h1>Our Products</h1>
       <ProductList />
     </div>
   );

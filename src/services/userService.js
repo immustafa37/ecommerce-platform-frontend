@@ -1,15 +1,24 @@
 import axios from 'axios';
-import { getToken } from '../utils/tokenStorage';
+import tokenStorage from '../utils/tokenStorage';
 
-export const getUserProfile = async (token) => {
-  try {
-    const response = await axios.get('/api/users/profile', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+const apiUrl = '/api/users/profile';
+
+const userService = {
+  getUserProfile: async () => {
+    const token = tokenStorage.getToken();
+    const response = await axios.get(apiUrl, {
+      headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
-  } catch (error) {
-    return { error: error.response.data.message };
+  },
+
+  updateUserProfile: async (formData) => {
+    const token = tokenStorage.getToken();
+    const response = await axios.put(apiUrl, formData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
   }
 };
+
+export default userService;

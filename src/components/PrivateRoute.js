@@ -1,11 +1,17 @@
+// src/components/PrivateRoute.js
 import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { getToken } from '../utils/tokenStorage';
+import { Route, Navigate } from 'react-router-dom';
 
-const PrivateRoute = ({ children }) => {
-  const token = getToken();
+// The PrivateRoute component checks if the user is authenticated
+const PrivateRoute = ({ component: Component, ...rest }) => {
+  const token = localStorage.getItem('token'); // Check if the token exists
 
-  return token ? children : <Navigate to="/login" />;
+  return (
+    <Route
+      {...rest}
+      element={token ? <Component /> : <Navigate to="/login" />} // Use Navigate instead of Redirect
+    />
+  );
 };
 
 export default PrivateRoute;

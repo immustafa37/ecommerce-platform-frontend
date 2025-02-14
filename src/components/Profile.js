@@ -1,37 +1,49 @@
-import React, { useEffect, useState } from 'react';
-import { getUserProfile } from '../services/userService';
-import { getToken } from '../utils/tokenStorage';
+import React, { useState, useEffect } from 'react';
+import userService from '../services/userService';
 
 const Profile = () => {
-  const [user, setUser] = useState(null);
-
-  const fetchUserProfile = async () => {
-    const token = getToken();
-    if (token) {
-      const data = await getUserProfile(token);
-      setUser(data);
-    }
-  };
+  const [user, setUser] = useState({});
+  const [newProfilePic, setNewProfilePic] = useState(null);
 
   useEffect(() => {
+    async function fetchUserProfile() {
+      try {
+        const userData = await userService.getUserProfile();
+        setUser(userData);
+      } catch (error) {
+        console.error('Error fetching profile', error);
+      }
+    }
     fetchUserProfile();
   }, []);
 
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    if (newProfilePic) formData.append('profilePicture', newProfilePic);
+
+    try {
+      await userService.updateUserProfile(formData);
+      // Optionally refresh user profile data
+    } catch (error) {
+      console.error('Error updating profile', error);
+    }
+  };
+
   return (
     <div>
-      <h2>User Profile</h2>
-      {user ? (
-        <div>
-          <h3>{user.name}</h3>
-          <p>Email: {user.email}</p>
-          {/* Add more user info as needed */}
-        </div>
-      ) : (
-        <p>Loading...</p>
-      )}
+      <h2>{user.name}'s Profile</h2>
+      <img src={user.profilePicture} alt="Profile" />
+      <form onSubmit={handleProfileUpdate}>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setNewProfilePic(e.target.files[0])}
+        />
+        <button type="submit">Update Profile</button>
+      </form>
     </div>
   );
 };
 
 export default Profile;
-

@@ -1,60 +1,41 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Use useNavigate instead of useHistory
-import authService from '../services/authService'; // Import authService as default
+import authService from '../services/authService';
 
-const Login = () => {
+const Login = ({ history }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const navigate = useNavigate(); // Initialize useNavigate
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setError('');
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      const userData = await authService.loginUser(email, password); // Call loginUser from authService
-      console.log('Login successful:', userData);
-
-      // Store token in localStorage (or any other storage you prefer)
-      localStorage.setItem('token', userData.token); // Assuming userData contains a token
-
-      // Redirect to the root path after successful login
-      navigate('/'); // Change '/dashboard' to '/'
-
-      // If you have a user context or state management, you can update the user state here
-      // e.g., setUser(userData.user); // Assuming userData contains user info
-
+      await authService.login(email, password);
+      history.push('/');  // Redirect to homepage
     } catch (error) {
-      setError('Login failed');
-      console.error('Login failed:', error);
+      console.error('Login failed', error);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <div>
       <h2>Login</h2>
-      <div>
-        <label>Email:</label>
+      <form onSubmit={handleSubmit}>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
           required
         />
-      </div>
-      <div>
-        <label>Password:</label>
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
           required
         />
-      </div>
-      {error && <p>{error}</p>}
-      <button type="submit">Login</button>
-    </form>
+        <button type="submit">Login</button>
+      </form>
+    </div>
   );
 };
 

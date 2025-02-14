@@ -1,31 +1,27 @@
 // src/services/productService.js
+import axios from 'axios';
+import tokenStorage from '../utils/tokenStorage';
 
-export const getProducts = async () => {
-  const response = await fetch('http://localhost:5000/api/products');
-  if (!response.ok) throw new Error('Failed to fetch products');
-  return await response.json();
+const apiUrl = '/api/products';
+
+const productService = {
+  getProducts: async () => {
+    const response = await axios.get(apiUrl);
+    return response.data;
+  },
+
+  getProduct: async (id) => {
+    const response = await axios.get(`${apiUrl}/${id}`);
+    return response.data;
+  },
+
+  addProduct: async (formData) => {
+    const token = tokenStorage.getToken(); // Retrieve the token for authorization
+    const response = await axios.post(apiUrl, formData, {
+      headers: { Authorization: `Bearer ${token}` }, // Set the authorization header
+    });
+    return response.data;
+  }
 };
 
-export const addProduct = async (productData) => {
-  const response = await fetch('http://localhost:5000/api/products', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(productData),
-  });
-  if (!response.ok) throw new Error('Failed to add product');
-  return await response.json();
-};
-
-export const updateProduct = async (id, productData) => {
-  const response = await fetch(`http://localhost:5000/api/products/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(productData),
-  });
-  if (!response.ok) throw new Error('Failed to update product');
-  return await response.json();
-};
+export default productService;
